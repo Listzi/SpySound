@@ -1,23 +1,17 @@
-
-import wave 
-  
+import wave
 print("Création d'un fichier audio au format WAV (PCM 8 bits mono 44100)")
-  
 Monson = wave.open('T:\isn\Starset2min8bitmono.wav','r') # on reserve un espace memoire et on fixe l'etat du son
     
 nbCanal = 1  # mono 
 nbOctect = 1 # echantillon : 8 bits = 1 octet
 frech = 44100 # frequence d'echantillonnage
 #   creation du fichier son
-bin_finale="bxfigjxfhihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+bin_finale=""
 Liste = []
 
 print("nb d'echantillonage :",Monson.getnframes())
 
 import binascii
-
-print("\nAffichage d'une plage de données (dans l'intervalle 0 -",Monson.getnframes()-1,")")
-
 plage = 50
 for i in range(0,plage):
     Monson.setpos(i)
@@ -32,4 +26,3 @@ Liste[0]=str(temp2[:6]+"98")
 print(Liste)
 
 Monson.close()
- 
