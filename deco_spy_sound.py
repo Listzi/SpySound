@@ -2,9 +2,10 @@
 #chaine de chr binaires extraite du fichier son
 decoded_b= input("deco :")
 #decodage entete
-nbr_chr=int(decoded_b[0:32],2)
+nbr_bits=int(decoded_b[0:32],2)
+nbr_chr=int(decoded_b[32:56],2)
 #dernier bit/ rang de travail
-last_bit=32
+last_bit=56
 temp=0
 #resultat final lisible par user
 txt_fin=''
