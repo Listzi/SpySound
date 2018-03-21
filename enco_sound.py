@@ -1,7 +1,6 @@
 import wave
 print("Création d'un fichier audio au format WAV (PCM 8 bits mono 44100)")
-Monson = wave.open('T:\isn\Starset2min8bitmono.wav','r') # on reserve un espace memoire et on fixe l'etat du son
-    
+Monson = wave.open('T:\isn\Starset2min8bitmono.wav','r') # on reserve un espace memoire et on fixe l'etat du son  
 nbCanal = 1  # mono 
 nbOctect = 1 # echantillon : 8 bits = 1 octet
 frech = 44100 # frequence d'echantillonnage
