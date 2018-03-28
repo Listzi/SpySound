@@ -34,7 +34,7 @@ for x in range(lenght):
     if dec_val>16777215 and dec_val<=4294967295:
         Info='11'
         bin_finale=bin_finale+Info+"{0:032b}".format(dec_val)
-nbr_bits=len(bin_finale)+32
+nbr_bits=len(bin_finale)
 #ajout nombre de bits à enco
-bin_finale=str("{0:032b}".format(len(bin_finale)+32))+bin_finale
+bin_finale=str("{0:032b}".format(len(bin_finale)))+bin_finale
 print(bin_finale)
