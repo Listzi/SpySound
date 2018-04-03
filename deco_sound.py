@@ -9,10 +9,7 @@ root.destroy()
 print (fichier)
 print("Création d'un fichier audio au format WAV (PCM 8 bits mono 44100)")
 Monson = wave.open(fichier,'r') # on reserve un espace memoire et on fixe l'etat du son
-nbCanal = 1  # mono 
-nbOctect = 1 # echantillon : 8 bits = 1 octet
-frech = 44100 # frequence d'echantillonnage
-nbr_bits=0
+nbr_bits=""
 decoded_b=""
 import binascii
 for x in range(0,32):
@@ -22,7 +19,7 @@ for x in range(0,32):
     
 nbr_deco=int(nbr_bits,2)
 
-for i in range(nbr_deco):
+for i in range(32,nbr_deco):
     Monson.setpos(i)
     temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
     decoded_b=decoded_b+temp[6:]
