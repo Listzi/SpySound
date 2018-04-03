@@ -1,3 +1,5 @@
+
+#https://www.python-course.eu/tkinter_text_widget.php;
 import wave
 import math
 # https://pythonspot.com/tk-file-dialogs/
