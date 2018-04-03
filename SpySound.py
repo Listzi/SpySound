@@ -2,7 +2,8 @@ import wave
 import math
 # https://pythonspot.com/tk-file-dialogs/
 from tkinter import filedialog
-from tkinter import *
+import tkinter
+from tkinter import messagebox
 def deco():
     #chaine de chr binaires extraite du fichier son
     decoded_b=value2.get()
@@ -46,11 +47,26 @@ def deco():
     result.set(txt_fin)
     print(txt_fin)
 def enco():
- root = Tk()
- root.filename =  filedialog.askopenfilename(initialdir = "T:/",title = "Select file",filetypes = (("WAV files","*.wav"),("all files","*.*")))
- fichier=root.filename
+    
+ messagebox.showinfo("Select initial file", "Select initial file")
+ 
+ root=Tk()
+ root.filename =  filedialog.askopenfilename(initialdir = "T:/",title = "Select file to encode",filetypes = (("WAV files","*.wav"),("all files","*.*")))
+ fichierRD=root.filename
  root.destroy()
- Monson = wave.open(fichier,'r') # on reserve un espace memoire et on fixe l'etat du son
+ print(fichierRD)
+ 
+ messagebox.showinfo("Select final file", "Select output file")
+ 
+ rooted = Tk()
+ rooted.filename=filedialog.asksaveasfilename(initialfile='FichierEncodé',initialdir = "T:/",title = "Target for encoded message",defaultextension=".wav",filetypes=(("WAV files","*.wav"),("all files","*.*")))
+ fichierRW=rooted.filename
+ rooted.destroy()
+ print(fichierRW)
+ 
+ Monson = wave.open(fichierRD,'rb') # on reserve un espace memoire et on fixe l'etat du son
+ Mysound = wave.open(fichierRW,'wb')
+ 
  #txt a enco
  intxt=str(value.get())
  #chaine de chr binaires a enco dans le fichier son
@@ -96,6 +112,8 @@ def enco():
  if Monson.getnframes()<nbr_bits:
     messagebox.showinfo('Alerte', 'Attention texte trop long !!')
     return
+    
+    
  import binascii
  plage = nbr_bits
  for i in range(0,plage):
@@ -104,6 +122,8 @@ def enco():
      Liste.append(str(temp[:6]+bin_finale[i*2:i*2+2]))
  print(Liste)
  Monson.close()
+ 
+ 
 def cln():
     result.set(" ")
 #(C) Fabrice Sincère
@@ -145,10 +165,6 @@ Label1.pack(side = TOP, padx = 5, pady = 5)
 
 BoutonCLN = Button(Mafenetre, text ='CLN', command = cln)
 BoutonCLN.pack(side = TOP, padx = 5, pady = 15)
-#Texte = StringVar()
 
-## Création d'un widget Label (texte 'Résultat -> x')
-#LabelResultat = Label(Mafenetre, textvariable = Texte, fg ='red', bg ='white')
-#LabelResultat.pack(side = LEFT, padx = 5, pady = 5)
 
 Mafenetre.mainloop()
