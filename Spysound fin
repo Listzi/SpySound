@@ -109,78 +109,46 @@ def enco():
  print(bin_finale)
  
  Liste = []
- 
- if Monson.getnframes()<nbr_bits:
+ Frm = Monson.getnframes()
+ if Frm<nbr_bits:
     messagebox.showinfo('Alerte', 'Attention texte trop long !!')
     return
     
+ nbCanal = 1    # stéreo
+ nbOctet = 1    # taille d'un échantillon : 1 octet = 8 bits
+ fech = 44100   # fréquence d'échantillonnage
+# nbEchantillon = Monson.getnframes()
+ nbEchantillon = Frm
+ parametres = (nbCanal,nbOctet,fech,nbEchantillon,'NONE','not compressed')# tuple
+ Mysound.setparams(parametres)    # création de l'en-tête (44 octets)
+# for i in range(0,nbEchantillon):
+#     Audio = wave.struct.pack('B',int(temp[:6]+bin_finale[i*2:i*2+2],2))
+#     Mysound.writeframes(Audio) # écriture frame
+#
     
- 
  plage = nbr_bits
  for i in range(0,plage):
      Monson.setpos(i)
      temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
      Liste.append(str(temp[:6]+bin_finale[i*2:i*2+2]))
- print(Liste)
- Monson.close()
+     Audio = wave.struct.pack('B',int(temp[:6]+bin_finale[i*2:i*2+2],2))
+     Mysound.writeframes(Audio) # écriture frame
+     print("a")
+
+ for i in range(plage+1,Frm):
+     Monson.setpos(i)
+     temp=int(binascii.hexlify(Monson.readframes(1)),16)
+     Audio = wave.struct.pack('B',temp)
+     Mysound.writeframes(Audio)
+     klm="b"+str(i)
+     print(klm)
  
-def deco2ur():
-    rooter = Tk()
-    rooter.filename =  filedialog.askopenfilename(initialdir = "T:/",title = "Select file",filetypes = (("WAV files","*.wav"),("all files","*.*")))
-    fichier89=rooter.filename
-    rooter.destroy()
-    print (fichier89)
-    print("Création d'un fichier audio au format WAV (PCM 8 bits mono 44100)")
-    Monson = wave.open(fichier89,'r') # on reserve un espace memoire et on fixe l'etat du son
-    nbr_bits=""
-    decoded_b=""
-    for x in range(0,32):
-        Monson.setpos(x)
-        temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
-        nbr_bits=nbr_bits+temp[6:]
-        
-    nbr_deco=int(nbr_bits,2)
-    
-    for i in range(32,nbr_deco):
-        Monson.setpos(i)
-        temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
-        decoded_b=decoded_b+temp[6:]
-        
-    nbr_chr=int(decoded_b[0:24],2)
-    last_bit=24
-    for x in range(nbr_chr):
-        #decodage nbr d'oct du chr
-        Info=int(decoded_b[last_bit:last_bit+2],2)
-        #1 octet
-        if Info==0:
-            #valeur dec du chr
-            temp=int(decoded_b[last_bit+2:last_bit+10],2)
-            #valeur "txt" du chr + ajout au txt decode
-            txt_fin=txt_fin+chr(temp)
-            #mise a jour du rang de travail
-            last_bit=last_bit+10
-        #2 octets
-        if Info==1:
-            temp=int(decoded_b[last_bit+2:last_bit+18],2)
-            txt_fin=txt_fin+chr(temp)
-            last_bit=last_bit+18
-        #3 octets
-        if Info==2:
-            temp=int(decoded_b[last_bit+2:last_bit+26],2)
-            txt_fin=txt_fin+chr(temp)
-            last_bit=last_bit+26
-        #4 octets (max)
-        if Info==3:
-            temp=int(decoded_b[last_bit+2:last_bit+34],2)
-            txt_fin=txt_fin+chr(temp)
-            last_bit=last_bit+34
-    print(txt_fin)
-        
-    print(i)    
-    print(Liste)
-    Monson.close()
-        
-    
+
+ print(Liste)
+ 
+ Monson.close()
+ Mysound.close()
+ 
 def cln():
     result.set(" ")
 #(C) Fabrice Sincère
@@ -212,15 +180,12 @@ value.set("Que faut-il décoder ?")
 entree = Entry(Mafenetre, textvariable=value2 ,width=100)
 entree.pack(side = TOP, padx = 5, pady = 5)
 
-BoutonDeco = Button(Mafenetre, text ='Lancer le décodage txt', command = deco)
-BoutonDeco.pack(side = TOP, padx = 5, pady = 15)
-
-BoutonDeco = Button(Mafenetre, text ='Lancer le décodage fichier', command = deco2ur)
+BoutonDeco = Button(Mafenetre, text ='Lancer le décodage', command = deco)
 BoutonDeco.pack(side = TOP, padx = 5, pady = 15)
 
 result = StringVar()
 result.set("")
-Label1 = Label(Mafenetre, textvariable = result,height=2)
+Label1 = Label(Mafenetre, textvariable = result)
 Label1.pack(side = TOP, padx = 5, pady = 5)
 
 BoutonCLN = Button(Mafenetre, text ='CLN', command = cln)
