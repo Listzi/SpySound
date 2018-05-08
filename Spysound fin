@@ -60,7 +60,7 @@ def deco():
     print(txt_fin)
 
     messagebox.showinfo('Attention Confidentiel', txt_fin)
-    txt.insert(INSERT,txt_fin)
+    txt2.insert(INSERT,txt_fin)
     
 def enco():
     
@@ -78,7 +78,7 @@ def enco():
  
  #txt a enco
  /
- /
+ /txt.get(1.0,END)
  /
  /
  /
@@ -166,11 +166,11 @@ def enco():
  
 def cln():
     #result.set(" ")
-    txt.delete(1.0,END)
+    txt2.delete(1.0,END)
 
 def result1():
-    txt.delete(1.0,END)
-    txt.insert(INSERT,txt_fin)
+    txt2.delete(1.0,END)
+    txt2.insert(INSERT,txt_fin)
 
 
 from tkinter import scrolledtext
@@ -180,6 +180,10 @@ Mafenetre = Tk()
 Mafenetre.title('Spysound')
 
 #champ de texte à encoder
+txt = scrolledtext.ScrolledText(Mafenetre,width=40,height=10)
+txt.pack(side = TOP, padx = 5, pady = 5)
+txt.insert(INSERT,"Que faut-il encoder ?")
+
 value = StringVar() 
 value.set("Que faut-il encoder ?")
 entree = Entry(Mafenetre, textvariable=value ,width=100)
@@ -204,9 +208,9 @@ BoutonDeco.pack(side = TOP, padx = 5, pady = 15)
 #Label1 = Label(Mafenetre, textvariable = result)
 #Label1.pack(side = TOP, padx = 5, pady = 5)
 
-txt = scrolledtext.ScrolledText(Mafenetre,width=40,height=10)
-txt.pack(side = TOP, padx = 5, pady = 5)
-txt.insert(INSERT,"hello world, waiting for something")
+txt2 = scrolledtext.ScrolledText(Mafenetre,width=40,height=10)
+txt2.pack(side = TOP, padx = 5, pady = 5)
+txt2.insert(INSERT,"hello world, waiting for something")
 
 #boutton pour effacer les résultats
 BoutonCLN = Button(Mafenetre, text ='CLN', command = cln)
