@@ -2,7 +2,8 @@ import wave
 import math
 import tkinter
 # https://pythonspot.com/tk-file-dialogs/
-#https://likegeeks.com/python-gui-examples-tkinter-tutorial/
+# https://likegeeks.com/python-gui-examples-tkinter-tutorial/
+# https://stackoverflow.com/questions/2905965/creating-threads-in-python
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import scrolledtext
