@@ -1,23 +1,36 @@
 import wave
 import math
+import tkinter
 # https://pythonspot.com/tk-file-dialogs/
 from tkinter import filedialog
-import tkinter
 from tkinter import messagebox
+from tkinter import scrolledtext
+from tkinter import *
 import binascii
+txt_fin=""
+
 def deco():
-    #chaine de chr binaires extraite du fichier son
-    decoded_b=value2.get()
-    #decodage entete
-    nbr_bits=int(decoded_b[0:32],2)
-    nbr_chr=int(decoded_b[32:56],2)
-    #dernier bit/ rang de travail
-    last_bit=56
-    temp=0
-    #resultat final lisible par user
-    txt_fin=''
-    #nombre de chr (a decoder)
-    print(int(decoded_b[0:32],2))
+    messagebox.showinfo("Select initial file", "Select initial file")
+    Mafenetre.filename =  filedialog.askopenfilename(initialdir = "T:/",title = "Select file to encode",filetypes = (("WAV files","*.wav"),("all files","*.*")))
+    fichierRD=Mafenetre.filename
+    Monson = wave.open(fichierRD,'rb')
+    nbr_bits=""
+    decoded_b=""
+    for x in range(0,32):
+        Monson.setpos(x)
+        temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
+        nbr_bits=nbr_bits+temp[6:]
+        
+    nbr_deco=int(nbr_bits,2)
+
+    for i in range(32,nbr_deco+1):
+        Monson.setpos(i)
+        temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
+        decoded_b=decoded_b+temp[6:]
+    
+    Monson.close()    
+    nbr_chr=int(decoded_b[0:24],2)
+    last_bit=24
     for x in range(nbr_chr):
         #decodage nbr d'oct du chr
         Info=int(decoded_b[last_bit:last_bit+2],2)
@@ -44,31 +57,31 @@ def deco():
             temp=int(decoded_b[last_bit+2:last_bit+34],2)
             txt_fin=txt_fin+chr(temp)
             last_bit=last_bit+34
-    messagebox.showinfo('Attention Confidentiel', txt_fin)
-    result.set(txt_fin)
     print(txt_fin)
+
+    messagebox.showinfo('Attention Confidentiel', txt_fin)
+    txt.insert(INSERT,txt_fin)
+    
 def enco():
     
  messagebox.showinfo("Select initial file", "Select initial file")
- 
- root=Tk()
- root.filename =  filedialog.askopenfilename(initialdir = "T:/",title = "Select file to encode",filetypes = (("WAV files","*.wav"),("all files","*.*")))
- fichierRD=root.filename
- root.destroy()
+ Mafenetre.filename =  filedialog.askopenfilename(initialdir = "T:/",title = "Select file to encode",filetypes = (("WAV files","*.wav"),("all files","*.*")))
+ fichierRD=Mafenetre.filename
  print(fichierRD)
- 
  messagebox.showinfo("Select final file", "Select output file")
- 
- rooted = Tk()
- rooted.filename=filedialog.asksaveasfilename(initialfile='FichierEncodé',initialdir = "T:/",title = "Target for encoded message",defaultextension=".wav",filetypes=(("WAV files","*.wav"),("all files","*.*")))
- fichierRW=rooted.filename
- rooted.destroy()
+ Mafenetre.filename2=filedialog.asksaveasfilename(initialfile='FichierEncodé',initialdir = "T:/",title = "Target for encoded message",defaultextension=".wav",filetypes=(("WAV files","*.wav"),("all files","*.*")))
+ fichierRW=Mafenetre.filename2
  print(fichierRW)
  
- Monson = wave.open(fichierRD,'rb') # on reserve un espace memoire et on fixe l'etat du son
+ Monson = wave.open(fichierRD,'rb') # on reserve un espace memoire et on fixe l'etat du fichier son
  Mysound = wave.open(fichierRW,'wb')
  
  #txt a enco
+ /
+ /
+ /
+ /
+ /
  intxt=str(value.get())
  #chaine de chr binaires a enco dans le fichier son
  bin_finale=""
@@ -88,12 +101,12 @@ def enco():
     #si valeur dec du chr encodable sur 1 oct :
     if dec_val<=255:
         Info='00'
-        #"{0:08b}".format(dec_val) permet de rajoutter des zeros pour avoir 8 bits
+        #"{0:08b}".format(dec_val) permet de rajouter des zeros pour avoir 8 bits
         bin_finale=bin_finale+Info+"{0:08b}".format(dec_val)
     #si valeur dec du chr encodable sur 2 oct :
     if dec_val>255 and dec_val<=65535:
         Info='01'
-        #"{0:016b}".format(dec_val) permet de rajoutter des zeros pour avoir 16 bits
+        #"{0:016b}".format(dec_val) permet de rajouter des zeros pour avoir 16 bits
         bin_finale=bin_finale+Info+"{0:016b}".format(dec_val)
     #si valeur dec du chr encodable sur 3 oct :
     if dec_val>65535 and dec_val<=16777215:
@@ -104,7 +117,7 @@ def enco():
         Info='11'
         bin_finale=bin_finale+Info+"{0:032b}".format(dec_val)
   #ajout nombre de bits à enco
- bin_finale=str("{0:032b}".format(len(bin_finale)+32))+bin_finale
+ bin_finale=str("{0:032b}".format(len(bin_finale)))+bin_finale
  nbr_bits=int(math.ceil(len(bin_finale)/2))
  print(bin_finale)
  
@@ -120,22 +133,25 @@ def enco():
 # nbEchantillon = Monson.getnframes()
  nbEchantillon = Frm
  parametres = (nbCanal,nbOctet,fech,nbEchantillon,'NONE','not compressed')# tuple
- Mysound.setparams(parametres)    # création de l'en-tête (44 octets)
-# for i in range(0,nbEchantillon):
-#     Audio = wave.struct.pack('B',int(temp[:6]+bin_finale[i*2:i*2+2],2))
-#     Mysound.writeframes(Audio) # écriture frame
-#
+ Mysound.setparams(parametres)    # création de l'en-tête
     
  plage = nbr_bits
  for i in range(0,plage):
      Monson.setpos(i)
+     #on lit la valeur de l'échantillon du fichier d'origine 
      temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
+     #(liste de vérification
      Liste.append(str(temp[:6]+bin_finale[i*2:i*2+2]))
+     #on créé la donnée à écrire dans le fichier final 
      Audio = wave.struct.pack('B',int(temp[:6]+bin_finale[i*2:i*2+2],2))
-     Mysound.writeframes(Audio) # écriture frame
+     #on écrit cette donnée dans le fichier final
+     Mysound.writeframes(Audio)
+     
      print("a")
 
- for i in range(plage+1,Frm):
+# même chose que le "if" précédant mais sans modifier l'échantillon
+#ce "if" ne fait que completer la fin du fichier
+ for i in range(plage,Frm): 
      Monson.setpos(i)
      temp=int(binascii.hexlify(Monson.readframes(1)),16)
      Audio = wave.struct.pack('B',temp)
@@ -143,53 +159,60 @@ def enco():
      klm="b"+str(i)
      print(klm)
  
-
- print(Liste)
+ print(Liste)#vérif
  
  Monson.close()
  Mysound.close()
  
 def cln():
-    result.set(" ")
-#(C) Fabrice Sincère
+    #result.set(" ")
+    txt.delete(1.0,END)
 
-from tkinter import *
-# Création de la fenêtre principale (main window)
+def result1():
+    txt.delete(1.0,END)
+    txt.insert(INSERT,txt_fin)
+
+
+from tkinter import scrolledtext
+# Création de la fenêtre principale
 Mafenetre = Tk()
 
 Mafenetre.title('Spysound')
-#Mafenetre.geometry('')
 
+#champ de texte à encoder
 value = StringVar() 
 value.set("Que faut-il encoder ?")
 entree = Entry(Mafenetre, textvariable=value ,width=100)
 entree.pack(side = TOP, padx = 5, pady = 5)
 
-# Création d'un widget Button (bouton Lancer)
+# Création d'un boutton
 BoutonEnco = Button(Mafenetre, text ='Lancer l\'encodage', command = enco)
-# Positionnement du widget avec la méthode pack()
 BoutonEnco.pack(side = TOP, padx = 5, pady = 5)
 
-#result1= StringVar()
-#result1.set("")
-#Label2 = Label(Mafenetre, textvariable = result1)
-#Label2.pack(side = TOP, padx = 5, pady = 5)
+#value2 = StringVar() 
+#value2.set("Que faut-il décoder ?")
+#entree = Entry(Mafenetre, textvariable=value2 ,width=100)
+#entree.pack(side = TOP, padx = 5, pady = 5)
 
-value2 = StringVar() 
-value.set("Que faut-il décoder ?")
-entree = Entry(Mafenetre, textvariable=value2 ,width=100)
-entree.pack(side = TOP, padx = 5, pady = 5)
-
-BoutonDeco = Button(Mafenetre, text ='Lancer le décodage', command = deco)
+#boutton de décodage
+BoutonDeco = Button(Mafenetre, text ='Lancer un décodage', command = deco)
 BoutonDeco.pack(side = TOP, padx = 5, pady = 15)
 
-result = StringVar()
-result.set("")
-Label1 = Label(Mafenetre, textvariable = result)
-Label1.pack(side = TOP, padx = 5, pady = 5)
+#ligne de texte décodé
+#result = StringVar()
+#result.set("")
+#Label1 = Label(Mafenetre, textvariable = result)
+#Label1.pack(side = TOP, padx = 5, pady = 5)
 
+txt = scrolledtext.ScrolledText(Mafenetre,width=40,height=10)
+txt.pack(side = TOP, padx = 5, pady = 5)
+txt.insert(INSERT,"hello world, waiting for something")
+
+#boutton pour effacer les résultats
 BoutonCLN = Button(Mafenetre, text ='CLN', command = cln)
 BoutonCLN.pack(side = TOP, padx = 5, pady = 15)
 
+BoutonCL = Button(Mafenetre, text ='result', command = result1)
+BoutonCL.pack(side = TOP, padx = 5, pady = 15)
 
 Mafenetre.mainloop()
