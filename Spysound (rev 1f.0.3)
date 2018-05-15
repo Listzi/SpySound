@@ -16,7 +16,9 @@ import time
 
 global intxt
 def trd_enco():
+    #on récupère le texte à encoder
     intxt=(txt.get(1.0,END))
+    #créé un nouveau thread pour exécuter la fonction enco
     thread1 = Thread(target = enco, args=())
     thread1.start()
     # enco()
@@ -76,18 +78,19 @@ def enco():
         
   #ajout nombre de bits à enco
  bin_finale=str("{0:032b}".format(len(bin_finale)))+bin_finale
+ #nombre d'encodages nécessaires pour encoder bin_finale, arrondi au supérieur pour ne pas perdre de bit
  nbr_enco=int(math.ceil(len(bin_finale)/2))
 
  #nombre d'ech du fichier son d'org
- Frm = Monson.getnframes()
- if Frm<nbr_enco*2:
+ nbEchantillon = Monson.getnframes()
+ if nbEchantillon<nbr_enco*2:
     messagebox.showinfo('Alerte', 'Attention texte trop long !!')
     return
     
- nbCanal = 1    # stéréo
+ nbCanal = 1    # mono
  nbOctet = 1    # taille d'un échantillon : 1 octet = 8 bits
  fech = 44100   # fréquence d'échantillonnage
- nbEchantillon = Frm
+ 
  
  parametres = (nbCanal,nbOctet,fech,nbEchantillon,'NONE','not compressed')
  Mysound.setparams(parametres)    # création de l'en-tête
@@ -117,6 +120,7 @@ def enco():
  Mysound.close()
 
 def trd_deco():
+    #créé un nouveau thread pour exécuter la fonction deco
     thread2 = Thread(target = deco, args=())
     thread2.start()
 
