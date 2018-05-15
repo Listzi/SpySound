@@ -4,14 +4,23 @@ import tkinter
 # https://pythonspot.com/tk-file-dialogs/
 # https://likegeeks.com/python-gui-examples-tkinter-tutorial/
 # https://stackoverflow.com/questions/2905965/creating-threads-in-python
+# http://fsincere.free.fr/isn/python/cours_python_ch9.php
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import scrolledtext
+from threading import Thread
+from time import sleep
 from tkinter import *
 import binascii
 import time
 
-
+global intxt
+def trd_enco():
+    intxt=(txt.get(1.0,END))
+    thread1 = Thread(target = enco, args=())
+    thread1.start()
+    # enco()
+    
 def enco():
  #fichier à encoder
  messagebox.showinfo("Select initial file", "Select initial file")
@@ -66,14 +75,8 @@ def enco():
         bin_finale=bin_finale+Info+"{0:032b}".format(dec_val)
         
   #ajout nombre de bits à enco
- ##verif: print('fin sans  head 32',bin_finale,'len:',len(bin_finale))
- bin_finale=str("{0:034b}".format(len(bin_finale)))+bin_finale
+ bin_finale=str("{0:032b}".format(len(bin_finale)))+bin_finale
  nbr_enco=int(math.ceil(len(bin_finale)/2))
- ##verif: print('avec head 32',bin_finale,'len:',len(bin_finale))
- ##verif: print('nombre d\'enco:',nbr_enco)
- 
- #verif
- Liste = []
 
  #nombre d'ech du fichier son d'org
  Frm = Monson.getnframes()
@@ -94,12 +97,8 @@ def enco():
      #on lit la valeur de l'échantillon du fichier d'origine 
      temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
      
-     #liste de vérification
-     Liste.append(str(temp[:6]+bin_finale[i*2:i*2+2]))
-     
      #on écrit cette donnée dans le fichier final(on créé la donnée à écrire dans le fichier final)
      Mysound.writeframes(wave.struct.pack('B',int(temp[:6]+bin_finale[i*2:i*2+2],2)))
-
 
 # même chose que le "if" précédant mais sans modifier l'échantillon
 #ce "if" ne fait que compléter la fin du fichier
@@ -108,16 +107,20 @@ def enco():
      temp=int(binascii.hexlify(Monson.readframes(1)),16)
      Audio = wave.struct.pack('B',temp)
      Mysound.writeframes(Audio)
-
      #valeur=poids du fichier, permet de connaître l'avancement mais ralentit l'encodage
      #klm="b"+str(i)
      #print(klm)
-    
- print(Liste)#vérif
+
+ messagebox.showinfo("Warning", "Encode complete")
  
  Monson.close()
  Mysound.close()
 
+def trd_deco():
+    thread2 = Thread(target = deco, args=())
+    thread2.start()
+
+    # enco()
 def deco():
     #sélection du fichier à décoder
     messagebox.showinfo("Select encoded file", "Select encoded file")
@@ -130,23 +133,16 @@ def deco():
     #decodage header
     for x in range(0,16): #  !!!!!! 32 bits oui MAIS 2 BITS PAR ECHANTILLON !!!!!
         Monson.setpos(x)
-        print(x," 1 ",binascii.hexlify(Monson.readframes(1)))
         temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
         nbr_bits=nbr_bits+temp[6:]
 
-    print("bits",int(nbr_bits,2),nbr_bits)
-
     nbr_deco = math.ceil(int(nbr_bits,2)/2)
-    
-    print("ech deco",nbr_deco)
+
     #décodage message
     for i in range(16,nbr_deco+16):
         Monson.setpos(i)
-        print(i," 2 ",binascii.hexlify(Monson.readframes(1)))
         temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
         decoded_b=decoded_b+temp[6:]
-
-    print("chaine bin complete",nbr_bits,decoded_b)
 
     #conversion binaire+code vers txt
     Monson.close()    
@@ -181,10 +177,7 @@ def deco():
             last_bit=last_bit+34
     print(txt_fin)
     
-    global txt_fin #pour réutiliser la variable dans d'autres fonctions
-
     #affiche le message décodé
-    #messagebox.showinfo('Attention Confidentiel', txt_fin)
     txt2.delete(1.0,END)
     txt2.insert(INSERT,txt_fin)
 
@@ -192,13 +185,6 @@ def deco():
 def cln():
     txt2.delete(1.0,END)
 
-#pour réécrire le résultat
-def result1():
-    txt2.delete(1.0,END)
-    txt2.insert(INSERT,txt_fin)
-
-
-from tkinter import scrolledtext
 # Création de la fenêtre principale
 Mafenetre = Tk()
 
@@ -209,17 +195,12 @@ txt = scrolledtext.ScrolledText(Mafenetre,height=8)
 txt.pack(side = TOP,fill=X,expand=YES, padx = 5, pady = 5)
 txt.insert(INSERT,"Que faut-il encoder ?")
 
-##value = StringVar() 
-##value.set("Que faut-il encoder ?")
-##entree = Entry(Mafenetre, textvariable=value ,width=100)
-##entree.pack(side = TOP, padx = 5, pady = 5)
-
 # Création d'un boutton
-BoutonEnco = Button(Mafenetre, text ='Lancer l\'encodage', command = enco)
+BoutonEnco = Button(Mafenetre, text ='Lancer l\'encodage', command = trd_enco)
 BoutonEnco.pack(side = TOP,expand=YES, padx = 5, pady = 5)
 
 #boutton de décodage
-BoutonDeco = Button(Mafenetre, text ='Lancer un décodage', command = deco)
+BoutonDeco = Button(Mafenetre, text ='Lancer un décodage', command = trd_deco)
 BoutonDeco.pack(side = TOP,expand=YES,  padx = 5, pady = 15)
 
 #champs de texte pour le résultat
@@ -227,12 +208,7 @@ txt2 = scrolledtext.ScrolledText(Mafenetre,height=8)
 txt2.pack(side = TOP,fill=X,expand=YES,  padx = 5, pady = 5)
 txt2.insert(INSERT,"hello world, waiting for something")
 
-#boutton pour réécrire les résultats
-BoutonCLN = Button(Mafenetre, text ='RESULT',justify=RIGHT, command = result1)
-BoutonCLN.pack(side = LEFT,anchor=E, expand=YES, padx = 0, pady = 5)
 #boutton pour effacer les résultats
 BoutonCL = Button(Mafenetre, text ='CLN',justify=LEFT, command = cln)
-BoutonCL.pack(side = RIGHT,anchor=W,expand=YES,padx = 0, pady = 5)
-
-
+BoutonCL.pack(side = TOP,padx = 2, pady = 5)
 Mafenetre.mainloop()
