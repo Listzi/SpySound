@@ -211,6 +211,6 @@ txt2.pack(side = TOP,fill=X,expand=YES,  padx = 5, pady = 5)
 txt2.insert(INSERT,"hello world, waiting for something")
 
 #boutton pour effacer les résultats
-BoutonCL = Button(Mafenetre, text ='CLN',justify=LEFT, command = cln)
+BoutonCL = Button(Mafenetre, text ='CLN', command = cln)
 BoutonCL.pack(side = TOP,padx = 2, pady = 5)
 Mafenetre.mainloop()
