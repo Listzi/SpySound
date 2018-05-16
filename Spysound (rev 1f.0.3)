@@ -9,10 +9,8 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import scrolledtext
 from threading import Thread
-from time import sleep
 from tkinter import *
 import binascii
-import time
 
 global intxt
 def trd_enco():
