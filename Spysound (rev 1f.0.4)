@@ -103,7 +103,7 @@ def enco():
 
 # même chose que le "if" précédant mais sans modifier l'échantillon
 #ce "if" ne fait que compléter la fin du fichier
- for i in range(nbr_enco,Frm): 
+ for i in range(nbr_enco,nbEchantillon): 
      Monson.setpos(i)
      temp=int(binascii.hexlify(Monson.readframes(1)),16)
      Audio = wave.struct.pack('B',temp)
