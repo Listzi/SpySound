@@ -8,6 +8,7 @@ import tkinter
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import scrolledtext
+from tkinter.ttk import Progressbar
 from threading import Thread
 from tkinter import *
 import binascii
@@ -22,6 +23,7 @@ def trd_enco():
     # enco()
     
 def enco():
+
  #fichier à encoder
  messagebox.showinfo("Select initial file", "Select initial file")
  Mafenetre.filename =  filedialog.askopenfilename(initialdir = "T:/",title = "Select file to encode",filetypes = (("WAV files","*.wav"),("all files","*.*")))
@@ -100,6 +102,8 @@ def enco():
      
      #on écrit cette donnée dans le fichier final(on créé la donnée à écrire dans le fichier final)
      Mysound.writeframes(wave.struct.pack('B',int(temp[:6]+bin_finale[i*2:i*2+2],2)))
+     
+     bar.step((1/nbEchantillon)*100)
 
 # même chose que le "if" précédant mais sans modifier l'échantillon
 #ce "if" ne fait que compléter la fin du fichier
@@ -111,11 +115,13 @@ def enco():
      #valeur=poids du fichier, permet de connaître l'avancement mais ralentit l'encodage
      #klm="b"+str(i)
      #print(klm)
+     bar.step((1/nbEchantillon)*100)
 
  messagebox.showinfo("Warning", "Encode complete")
  
  Monson.close()
  Mysound.close()
+
 
 def trd_deco():
     #créé un nouveau thread pour exécuter la fonction deco
@@ -145,6 +151,7 @@ def deco():
         Monson.setpos(i)
         temp="{0:08b}".format(int(binascii.hexlify(Monson.readframes(1)),16))
         decoded_b=decoded_b+temp[6:]
+        bar.step((1/nbr_deco+16)*100)
 
     #conversion binaire+code vers txt
     Monson.close()    
@@ -200,6 +207,9 @@ txt.insert(INSERT,"Que faut-il encoder ?")
 # Création d'un boutton
 BoutonEnco = Button(Mafenetre, text ='Lancer l\'encodage', command = trd_enco)
 BoutonEnco.pack(side = TOP,expand=YES, padx = 5, pady = 5)
+
+bar = Progressbar(Mafenetre, length=200,mode='determinate', value = 0)
+bar.pack(side = TOP,expand=YES, padx = 5, pady = 5)
 
 #boutton de décodage
 BoutonDeco = Button(Mafenetre, text ='Lancer un décodage', command = trd_deco)
